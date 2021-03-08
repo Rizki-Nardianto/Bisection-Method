@@ -1,37 +1,58 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import fsolve
 
+def inputdata(nilai_a, nilai_b):
+    nilai_a= float(input("Masukan data awal a : "))
+    nilai_b= float(input("Masukan data awal b : "))
+    return (nilai_a, nilai_b)
 
-def f(x):
-    return x**2 - 2
+def y(x):
+    return (x**3-(7*x)+1)
 
-# method bisection
-def bisection(a,b,tol):
-    xl = a
-    xr = b
-    i = 1
-    while (np.abs(xr-xl)>= tol):
-        c = (xl + xr)/2.0
-        fung = f(xl)*f(c)
-        if fung > tol:
-            xl = c
-            i += 1
-        else:
-            if fung < tol:
-                xr = c
-                i += 1
-    return i,c
+def checkAB(nilai_a, nilai_b):
+    if(y(nilai_a)*y(nilai_b)<0):
+        return True
+    else:
+        return False
 
-jawaban = bisection(-5,5, 1e-8)
-print('jawaban = ', jawaban[1])
-print('jumlah iterasi = ', jawaban[0])
+def updateData(nilai_a, nilai_b):
+    nilai_c= (nilai_a + nilai_b)/2
+    if(y(nilai_a)*y(nilai_c)<0):
+        nilai_b = nilai_c
+    else :
+        nilai_a = nilai_c
+    return (nilai_a, nilai_b)
 
-# menggunakan libray scipy
-jawaban = fsolve(f,[-5,1.5])
-print ('hasil menggubakan fsolve untuk menemukan root = ', jawaban[0])
+def process(nilai_a,nilai_b, prc):
+    while(abs(y(nilai_a))>prc or abs(y(nilai_b))>prc):
+        nilai_a, nilai_b = updateData(nilai_a, nilai_b)
 
-x = np.linspace(-2,2,100)
-plt.plot(x, f(x))
-plt.grid()
-plt.show()
+    if(abs(y(nilai_a))>abs(y(nilai_b))):
+        return nilai_b
+    else:
+        return nilai_a
+    # return (a,b)
+   
+
+def main():
+    nilai_a= 0
+    nilai_b= 0
+    prc= 0
+    result = 0
+    nilai_a, nilai_b = inputdata(nilai_a, nilai_b)
+    if(checkAB(nilai_a, nilai_b)):
+        print ("Data sesuai bisa dilanjutkan")
+        prc = float(input("Masukan nilai error toleransi : "))
+        result = process(nilai_a, nilai_b,prc)
+        print ("Hasil = ",result," Dengan nilai y(x) ",y(result))
+    else:
+        print ("Data tidak sesuai tidak bisa dilanjutkan")
+
+    x = np.linspace(nilai_a,nilai_b,100)
+    plt.plot(x, f(x))
+    plt.grid()
+    plt.xlabel("Grafik Fungsi y(x)")
+    plt.show()
+    
+main()
+
